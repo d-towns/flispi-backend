@@ -1,0 +1,7 @@
+/node_modules
+/database
+/build
+/.DS_Store
+/flispi_scrapy/.DS_Store
+/flispi_scrapy/flispi_scrapy/.DS_Store
+```

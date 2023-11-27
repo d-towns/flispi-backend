@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    /* Basic Options */
+    "target": "ES2017",           /* Specify ECMAScript target version. */
+    "module": "commonjs",         /* Specify module code generation. */
+    "rootDir": "./src",             /* Specify the root directory of your source files. */
+    "outDir": "./build",             /* Output directory for generated files. */
+    "moduleResolution": "node",   /* Specify module resolution strategy. */
+    "esModuleInterop": true,      /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects. */
+    "strict": false,               /* Enable all strict type-checking options. */
+    "forceConsistentCasingInFileNames": true,  /* Disallow inconsistently-cased references to the same file. */
+    /* Additional Options */
+    "resolveJsonModule": true,    /* Include modules imported with '.json' extension. */
+  }
+}

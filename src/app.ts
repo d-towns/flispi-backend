@@ -2,19 +2,27 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { Sequelize, Model, DataTypes, where, Op } from 'sequelize';
 import { FLOAT, INTEGER } from 'sequelize';
+import cors from 'cors';
 
 const app = express();
 const port = 4000;
 
 // Create Sequelize instance
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: './database/landbank_properties.sqlite'
+// const sequelize = new Sequelize({
+//   dialect: 'sqlite',
+//   storage: './database/landbank_properties.sqlite'
+// });
+
+
+const sequelize = new Sequelize('flispi_db', 'api_user', 'flispi', {
+  host: 'localhost',
+  dialect: 'postgres'
 });
 
+
 // Define Property model
-class Property extends Model { }
-Property.init({
+class _Property extends Model { }
+_Property.init({
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true
@@ -41,8 +49,9 @@ Property.init({
 sequelize.sync();
 
 // Middleware for parsing request body
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -68,7 +77,7 @@ app.get('/properties', async (req: any, res: any) => {
     const limit = req.query.limit;
     const offset = req.query.offset;
 
-    const properties = await Property.findAll({
+    const properties = await _Property.findAll({
       attributes: ['parcel_id', 'id', 'address', 'city', 'zip', 'property_class', 'price', 'square_feet', 'bedrooms', 'bathrooms', 'lot_size', 'features', 'year_built', 'garage', 'stories', 'coords', 'images'],
       where: {
         address: { [Op.ne]: null },
@@ -114,7 +123,7 @@ app.get('/properties', async (req: any, res: any) => {
 app.get('/properties/:id', async (req: any, res: any) => {
   try {
     
-    const property = await Property.findByPk(req.params.id, {
+    const property = await _Property.findByPk(req.params.id, {
       attributes: ['parcel_id', 'id', 'address', 'city', 'zip', 'property_class', 'price', 'price', 'square_feet', 'bedrooms', 'bathrooms', 'lot_size', 'features', 'year_built', 'garage', 'stories', 'coords', 'images'],
     });
 
@@ -131,7 +140,7 @@ app.get('/properties/:id', async (req: any, res: any) => {
 // create an endpoint /properties/zip that returns a list of all unique zip codes in the Property table
 app.get('/zip', async (req: any, res: any) => {
   try {
-    const properties = await Property.findAll({
+    const properties = await _Property.findAll({
       attributes: ['zip'],
       group: ['zip'],
       where: {
@@ -148,7 +157,7 @@ app.get('/zip', async (req: any, res: any) => {
 
 app.post('/properties', async (req: any, res: any) => {
   try {
-    const property = await Property.create(req.body);
+    const property = await _Property.create(req.body);
     res.json(property);
   } catch (error) {
     res.status(500).send('Error creating the property.');

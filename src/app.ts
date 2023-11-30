@@ -2,48 +2,27 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { Sequelize, Model, DataTypes, where, Op } from 'sequelize';
 import { FLOAT, INTEGER } from 'sequelize';
+import { _Property } from './models/property.model';
 import cors from 'cors';
+import * as dotenv from 'dotenv';
+
+// Determine the environment and load the appropriate .env file
+const envFile = process.env.NODE_ENV === 'production' ? 'prod.env' : 'local.env';
+dotenv.config({ path: envFile });
+
+// Rest of your imports and application code
 
 const app = express();
 const port = 4000;
 
-// Create Sequelize instance
-// const sequelize = new Sequelize({
-//   dialect: 'sqlite',
-//   storage: './database/landbank_properties.sqlite'
-// });
-
-
-const sequelize = new Sequelize('flispi_db', 'api_user', 'flispi', {
-  host: 'localhost',
+const sequelize = new Sequelize(process.env.POSTGRESS_URL, {
+  host: 'db',
   dialect: 'postgres'
 });
 
 
 // Define Property model
-class _Property extends Model { }
-_Property.init({
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true
-  },
-  parcel_id: DataTypes.TEXT,
-  address: DataTypes.TEXT,
-  city: DataTypes.TEXT,
-  zip: DataTypes.TEXT,
-  property_class: DataTypes.TEXT,
-  price: DataTypes.TEXT,
-  square_feet: DataTypes.TEXT,
-  bedrooms: DataTypes.INTEGER,
-  bathrooms: DataTypes.INTEGER,
-  lot_size: DataTypes.FLOAT,
-  features: DataTypes.TEXT,
-  year_built: DataTypes.STRING,
-  garage: DataTypes.TEXT,
-  stories: DataTypes.INTEGER,
-  coords: DataTypes.JSON,
-  images: DataTypes.JSON
-}, { sequelize, modelName: 'property' });
+
 
 // Sync models with database
 sequelize.sync();
@@ -53,11 +32,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN, // Use the environment variable
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept']
+};
+app.use(cors(corsOptions)); // Use CORS with options
 
 // CRUD routes for Property model
 app.get('/properties', async (req: any, res: any) => {

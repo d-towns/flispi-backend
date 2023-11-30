@@ -13,6 +13,8 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+EXPOSE 4000
+
 FROM base as production
 
 ENV NODE_PATH=./build

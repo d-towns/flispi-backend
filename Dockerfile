@@ -17,11 +17,6 @@ EXPOSE 4000
 
 ENV NODE_PATH=./build
 
-ENV POSTGRES_URL=$POSTGRES_URL
-
-# Copy environment variables into the build
-COPY .env .env
-
 RUN npm run build
 
 CMD ["node", "build/app.js"]

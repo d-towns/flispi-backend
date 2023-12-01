@@ -5,18 +5,18 @@ import { FLOAT, INTEGER } from 'sequelize';
 import { _Property } from './models/property.model';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
-
-// Determine the environment and load the appropriate .env file
-const envFile = process.env.NODE_ENV === 'production' ? 'prod.env' : 'local.env';
-dotenv.config({ path: envFile });
-
+dotenv.config();
 // Rest of your imports and application code
 
 const app = express();
 const port = 4000;
 
-const sequelize = new Sequelize(process.env.POSTGRESS_URL, {
-  host: 'db',
+console.log('process.env.NODE_ENV', process.env.NODE_ENV);
+console.log('process.env.POSTGRESS_URL', process.env.POSTGRESS_URL);
+console.log('process.env.PROD_POSTGRESS_URL', process.env.PROD_POSTGRESS_URL);
+
+
+const sequelize = new Sequelize(process.env.NODE_ENV === 'production' ? process.env.PROD_POSTGRESS_URL : process.env.POSTGRESS_URL, {
   dialect: 'postgres'
 });
 

@@ -25,18 +25,18 @@ const sequelize = new Sequelize(process.env.NODE_ENV === 'production' ? process.
 
 
 // Sync models with database
+sequelize.authenticate()
 sequelize.sync();
 
 // Middleware for parsing request body
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
 
-const corsOptions = {
-  origin: process.env.CORS_ORIGIN, // Use the environment variable
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept']
-};
-app.use(cors(corsOptions)); // Use CORS with options
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', process.env.CORS_ORIGIN);
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
 // CRUD routes for Property model
 app.get('/properties', async (req: any, res: any) => {

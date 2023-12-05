@@ -14,6 +14,7 @@ const port = 4000;
 console.log('process.env.NODE_ENV', process.env.NODE_ENV);
 console.log('process.env.POSTGRESS_URL', process.env.POSTGRESS_URL);
 console.log('process.env.PROD_POSTGRESS_URL', process.env.PROD_POSTGRESS_URL);
+console.log('process.env.CORS_ORIGIN', process.env.CORS_ORIGIN);
 
 
 const sequelize = new Sequelize(process.env.NODE_ENV === 'production' ? process.env.PROD_POSTGRESS_URL : process.env.POSTGRESS_URL, {

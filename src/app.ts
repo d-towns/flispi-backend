@@ -9,12 +9,13 @@ dotenv.config();
 // Rest of your imports and application code
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT;
 
 console.log('process.env.NODE_ENV', process.env.NODE_ENV);
 console.log('process.env.POSTGRESS_URL', process.env.POSTGRESS_URL);
 console.log('process.env.PROD_POSTGRESS_URL', process.env.PROD_POSTGRESS_URL);
 console.log('process.env.CORS_ORIGIN', process.env.CORS_ORIGIN);
+console.log('process.env.PORT', process.env.PORT);
 
 
 const sequelize = new Sequelize(process.env.NODE_ENV === 'production' ? process.env.PROD_POSTGRESS_URL : process.env.POSTGRESS_URL, {
@@ -144,7 +145,7 @@ app.post('/properties', async (req: any, res: any) => {
   }
 });
 
-app.listen(process.env.PORT, () => {
+app.listen(port, () => {
   console.log(`Server is running on port ${port}.`);
 });
 

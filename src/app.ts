@@ -144,7 +144,7 @@ app.post('/properties', async (req: any, res: any) => {
   }
 });
 
-app.listen(port, () => {
+app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${port}.`);
 });
 

@@ -25,3 +25,6 @@ class Property(scrapy.Item):
     features = scrapy.Field();
     coords = scrapy.Field();
     images = scrapy.Field();
+    next_showtime = scrapy.Field();
+    exterior_repairs = scrapy.Field();
+    interior_repairs = scrapy.Field();

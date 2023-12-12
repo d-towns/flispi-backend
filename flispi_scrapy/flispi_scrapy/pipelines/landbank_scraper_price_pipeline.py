@@ -1,15 +1,22 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, INTEGER
 from sqlalchemy.orm import sessionmaker
 
 from flispi_scrapy.models.sql.property import PropertyEntity
 
 import googlemaps
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-gmaps = googlemaps.Client(key='AIzaSyDNQz71iokW0F045lNGGa514dZj9PGhx6E')
+gmaps = googlemaps.Client(key=os.environ['GOOGLE_API_KEY']
+)
 
 class LandbankPriceScraperPipeline(object):
     def open_spider(self, spider):
-        self.connection_string = "sqlite:///landbank_properties.db"
+        #Get specific environment variables
+        prod_db_url = os.environ['PROD_POSTGRESS_URL']
+
+        self.connection_string = prod_db_url
         self.engine = create_engine(self.connection_string)
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
@@ -36,18 +43,21 @@ class LandbankPriceScraperPipeline(object):
             else:
                 print('geocode_result WAS NOT FOUND')
                 print('No geocode result for', address)
-        
+        print(item)
         if property_:
-            property_.price = item.get('price', None)
-            property_.square_feet = item.get('square_feet', None)
-            property_.bedrooms = item.get('bedrooms', None)
-            property_.bathrooms = item.get('bathrooms', None)
+            property_.price = int(item.get('price', 0))
+            property_.square_feet = int(item.get('square_feet', 0))
+            property_.bedrooms = int(item.get('bedrooms', 0))
+            property_.bathrooms = int(item.get('bathrooms', 0))
             property_.year_built = item.get('year_built', None)
-            property_.lot_size = item.get('lot_size', None)
-            property_.stories = item.get('stories', None)
+            property_.lot_size = float(item.get('lot_size', 0))
+            property_.stories = int(item.get('stories', 0))
             property_.garage = item.get('garage', None)
             property_.features = item.get('features', None)
-            property_.images = item.get('images', None)                                 
+            property_.images = item.get('images', None)
+            property_.exterior_repairs = item.get('exterior_repairs', None)
+            property_.interior_repairs = item.get('interior_repairs', None)
+            property_.next_showtime = item.get('next_showtime', None)
             self.session.commit()
         
         return item

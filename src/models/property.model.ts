@@ -25,4 +25,4 @@ _Property.init({
   stories: DataTypes.INTEGER,
   coords: DataTypes.JSON,
   images: DataTypes.JSON
-}, { sequelize, modelName: 'properties', timestamps: false});
+}, { sequelize, modelName: 'properties_better', timestamps: false, freezeTableName: true});

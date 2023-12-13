@@ -16,6 +16,12 @@ services:
       - ./src:/home/node/app/src
       - ./database:/home/node/app/database
       - ./nodemon.json:/home/node/app/nodemon.json
+    environment:
+      PROD_POSTGRESS_URL: ${PROD_POSTGRESS_URL}
+      POSTGRESS_URL: ${POSTGRESS_URL}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${PORT}
     expose:
       - '4000'
     ports:

@@ -31,15 +31,15 @@ class PriceSpider(scrapy.Spider):
         parcel_ids = [row.parcel_id for row in session.query(PropertyEntity.parcel_id).all() if row.parcel_id != '0' and row.parcel_id != 'None']
         session.close()
         # Test Url
-        yield scrapy.Request(url='https://www.thelandbank.org/property_sheet.asp?pid=4636254018&loc=4&from=main', 
-            callback=self.parse,
-            meta={'parcel_id': '4636254018'})
-        # for pid in parcel_ids:
-        # #     # Assuming parcelId is a unique identifier, construct the URL
-        # #     # https://www.thelandbank.org/property_sheet.asp?pid=0404300022&loc=2&from=main
-        #     yield scrapy.Request(url='https://www.thelandbank.org/property_sheet.asp?pid=' + str(pid) + '&loc=2&from=main', 
-        #                 callback=self.parse, 
-        #                 meta={'parcel_id': pid})
+        # yield scrapy.Request(url='https://www.thelandbank.org/property_sheet.asp?pid=4119176011&loc=2&from=main', 
+        #     callback=self.parse,
+        #     meta={'parcel_id': '4119176011'})
+        for pid in parcel_ids:
+        #     # Assuming parcelId is a unique identifier, construct the URL
+        #     # https://www.thelandbank.org/property_sheet.asp?pid=0404300022&loc=2&from=main
+            yield scrapy.Request(url='https://www.thelandbank.org/property_sheet.asp?pid=' + str(pid) + '&loc=2&from=main', 
+                        callback=self.parse, 
+                        meta={'parcel_id': pid})
 
     # Grab the data on the search details page (property_sheet.asp)
     def parse(self, response):
@@ -56,7 +56,7 @@ class PriceSpider(scrapy.Spider):
                 print('price_row', starting_price)
                 property_item['price'] = starting_price
             else:
-                property_item['price'] = None
+                property_item['price'] = 0
 
 
         # Extract the href attribute from the selected <a> tag
@@ -81,33 +81,38 @@ class PriceSpider(scrapy.Spider):
         exterior_repairs_text = response.xpath("//article[@id='content']/ul[position()=1]")
         interior_repairs_text = response.xpath("//article[@id='content']/ul[position()=2]")
 
-        print('EXTERIOR', exterior_repairs_text)
+        # print('EXTERIOR', exterior_repairs_text)
+        print('NEXT SHOWTIME', next_showtime)
 
         exterior_repairs = []
         interior_repairs = []
-
-        for li in exterior_repairs_text.xpath('./li'):
-            text = li.xpath('normalize-space(.)').get()
-            exterior_repairs.append(text)
-            print(exterior_repairs)
-
-        for li in interior_repairs_text.xpath('./li'):
-            text = li.xpath('normalize-space(.)').get()
-            interior_repairs.append(text)
-            print(interior_repairs)
         
-        property_details['interior_repairs'] = interior_repairs
-        property_details['exterior_repairs'] = exterior_repairs
-        match = re.search(r'(\w+,\s+\w+\s+\d{1,2},\s+\d{4});\s+(\d{1,2}:\d{2}\s+[ap]\.m\.)', next_showtime)
-        if match:
-            date_to_parse = match.group(1) + ' ' + match.group(2)
-            print('DATE TO PARSE', date_to_parse)
-            date_string = date_to_parse.replace('p.m.', 'PM').replace('a.m.', 'AM')
-            print(date_string)
-            date_object = datetime.strptime(date_string, '%A, %B %d, %Y %I:%M %p')
-            property_details['next_showtime'] = date_object
-        else:
-            print("SHOWTIME: Date and time format not recognized")
+        if exterior_repairs_text.xpath('./li'):
+            print('here')
+            for li in exterior_repairs_text.xpath('./li'):
+                text = li.xpath('normalize-space(.)').get()
+                exterior_repairs.append(text)
+                print(exterior_repairs)
+            property_details['exterior_repairs'] = interior_repairs
+
+        if interior_repairs_text.xpath('./li'):
+            for li in interior_repairs_text.xpath('./li'):
+                text = li.xpath('normalize-space(.)').get()
+                interior_repairs.append(text)
+                print(interior_repairs)
+            property_details['interior_repairs'] = exterior_repairs
+
+        if next_showtime:
+            match = re.search(r'(\w+,\s+\w+\s+\d{1,2},\s+\d{4});\s+(\d{1,2}:\d{2}\s+[ap]\.m\.)', next_showtime)
+            if match:
+                date_to_parse = match.group(1) + ' ' + match.group(2)
+                print('DATE TO PARSE', date_to_parse)
+                date_string = date_to_parse.replace('p.m.', 'PM').replace('a.m.', 'AM')
+                print(date_string)
+                date_object = datetime.strptime(date_string, '%A, %B %d, %Y %I:%M %p')
+                property_details['next_showtime'] = date_object
+            else:
+                print("SHOWTIME: Date and time format not recognized")
 
         print('property_info_list', property_info_list)
 

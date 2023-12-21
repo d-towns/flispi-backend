@@ -45,7 +45,7 @@ class LandbankPriceScraperPipeline(object):
                 print('No geocode result for', address)
         print(item)
         if property_:
-            property_.price = int(item.get('price', 0))
+            property_.price =  int(item.get('price',0))
             property_.square_feet = int(item.get('square_feet', 0))
             property_.bedrooms = int(item.get('bedrooms', 0))
             property_.bathrooms = int(item.get('bathrooms', 0))

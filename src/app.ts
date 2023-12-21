@@ -5,18 +5,12 @@ import { FLOAT, INTEGER } from 'sequelize';
 import { _Property } from './models/property.model';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
+import { _Blog } from './models/blog.model';
 dotenv.config();
 // Rest of your imports and application code
 
 const app = express();
 const port = process.env.PORT;
-
-console.log('process.env.NODE_ENV', process.env.NODE_ENV);
-console.log('process.env.POSTGRESS_URL', process.env.POSTGRESS_URL);
-console.log('process.env.PROD_POSTGRESS_URL', process.env.PROD_POSTGRESS_URL);
-console.log('process.env.CORS_ORIGIN', process.env.CORS_ORIGIN);
-console.log('process.env.PORT', process.env.PORT);
-
 
 const sequelize = new Sequelize(process.env.NODE_ENV === 'production' ? process.env.PROD_POSTGRESS_URL : process.env.POSTGRESS_URL, {
   dialect: 'postgres'
@@ -43,7 +37,6 @@ app.use((req, res, next) => {
 // CRUD routes for Property model
 app.get('/properties', async (req: any, res: any) => {
   try {
-    console.log('query', req.query);
     
     const seachTerm = req.query.searchTerm;
     const city: string[] =  req.query.city && String(req.query.city)?.toUpperCase().split(',');
@@ -54,12 +47,13 @@ app.get('/properties', async (req: any, res: any) => {
 
     const sqftMax = req.query.sqft
     const lot_sizeMax = req.query.lotSize;
+    const isFeatured = req.query.featured;
     
     const limit = req.query.limit;
     const offset = req.query.offset;
 
     const properties = await _Property.findAll({
-      attributes: ['parcel_id', 'id', 'address', 'city', 'zip', 'property_class', 'price', 'square_feet', 'bedrooms', 'bathrooms', 'lot_size', 'features', 'year_built', 'garage', 'stories', 'coords', 'images'],
+      attributes: ['parcel_id', 'id', 'address', 'city', 'zip', 'property_class', 'price', 'square_feet', 'bedrooms', 'bathrooms', 'lot_size', 'featured', 'year_built', 'garage', 'stories', 'coords', 'images'],
       where: {
         address: { [Op.ne]: null },
         parcel_id: { [Op.ne]: null },
@@ -87,6 +81,9 @@ app.get('/properties', async (req: any, res: any) => {
         ...(lot_sizeMax && {
           lot_size: { [Op.gte]: lot_sizeMax },
         }),
+        ...(isFeatured && {
+          featured: { [Op.eq]: isFeatured },
+        }),
       },
       order: sort && [
         [sort[0], sort[1]]
@@ -105,7 +102,7 @@ app.get('/properties/:id', async (req: any, res: any) => {
   try {
     
     const property = await _Property.findByPk(req.params.id, {
-      attributes: ['parcel_id', 'id', 'address', 'city', 'zip', 'property_class', 'price', 'price', 'square_feet', 'bedrooms', 'bathrooms', 'lot_size', 'features', 'year_built', 'garage', 'stories', 'coords', 'images'],
+      attributes: ['parcel_id', 'id', 'address', 'city', 'zip', 'property_class', 'price', 'price', 'square_feet', 'bedrooms', 'bathrooms', 'lot_size', 'features', 'year_built', 'garage', 'stories', 'coords', 'images', 'next_showtime', 'interior_repairs', 'exterior_repairs'],
     });
 
     if (property) {
@@ -142,6 +139,24 @@ app.post('/properties', async (req: any, res: any) => {
     res.json(property);
   } catch (error) {
     res.status(500).send('Error creating the property.');
+  }
+});
+
+app.get('/blog', async (req: any, res: any) => {
+  try {
+    const blogs = await _Blog.findAll()
+    res.json(blogs);
+  } catch (error) {
+    res.status(500).send('Error fetching blogs');
+  }
+});
+
+app.get('/blog/:id', async (req: any, res: any) => {
+  try {
+    const blog = await _Blog.findByPk(req.params.id)
+    res.json(blog);
+  } catch (error) {
+    res.status(500).send('Error fetching blogs');
   }
 });
 

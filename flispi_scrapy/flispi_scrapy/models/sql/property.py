@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 Base = declarative_base()
 
 class PropertyEntity(Base):
-    __tablename__ = 'properties_better'
+    __tablename__ = 'properties'
     
     id = Column(String, primary_key=True, default=uuid.uuid4)  # new UUID field
     parcel_id = Column(String, unique=True)  # no longer a primary key, but still unique

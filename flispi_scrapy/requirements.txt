@@ -1,5 +1,0 @@
-scrapy
-pandas
-sqlalchemy
-uuid
-python-dotenv

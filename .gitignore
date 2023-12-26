@@ -4,3 +4,6 @@
 /.DS_Store
 /flispi_scrapy/.DS_Store
 /flispi_scrapy/flispi_scrapy/.DS_Store
+local.env
+prod.env
+```

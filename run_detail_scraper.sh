@@ -1,0 +1,1 @@
+cd flispi_scrapy/ && source venv/bin/activate && cd flispi_scrapy && scrapy crawl price_spider

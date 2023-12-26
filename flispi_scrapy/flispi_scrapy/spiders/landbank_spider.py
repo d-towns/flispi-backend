@@ -5,6 +5,11 @@ from ..models.scrapy.property import Property
 class LandBankSpider(scrapy.Spider):
     name = 'landbank_spider'
     start_urls = ['https://www.thelandbank.org/find_properties.asp?LRCsearch=setdo']
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'flispi_scrapy.pipelines.landbank_scraper_pipeline.LandbankScraperPipeline': 300
+        }
+    }
 
     def parse(self, response):
         for row in response.xpath('//tr'):

@@ -102,7 +102,7 @@ app.get('/properties/:id', async (req: any, res: any) => {
   try {
     
     const property = await _Property.findByPk(req.params.id, {
-      attributes: ['parcel_id', 'id', 'address', 'city', 'zip', 'property_class', 'price', 'price', 'square_feet', 'bedrooms', 'bathrooms', 'lot_size', 'features', 'year_built', 'garage', 'stories', 'coords', 'images', 'next_showtime', 'interior_repairs', 'exterior_repairs'],
+      attributes: ['parcel_id', 'id', 'address', 'city', 'zip', 'property_class', 'price', 'price', 'square_feet', 'bedrooms', 'bathrooms', 'lot_size', 'featured', 'year_built', 'garage', 'stories', 'coords', 'images', 'next_showtime', 'interior_repairs', 'exterior_repairs'],
     });
 
     if (property) {

@@ -8,15 +8,14 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-gmaps = googlemaps.Client(key=os.environ['GOOGLE_API_KEY']
-)
+gmaps = googlemaps.Client(key=os.environ['GOOGLE_API_KEY'])
 
 class LandbankPriceScraperPipeline(object):
     def open_spider(self, spider):
         #Get specific environment variables
-        prod_db_url = os.environ['PROD_POSTGRESS_URL']
+        db_url = os.environ['PROD_POSTGRESS_URL'] if os.environ['NODE_ENV'] != 'development' else os.environ['DEV_POSTGRESS_URL']
 
-        self.connection_string = prod_db_url
+        self.connection_string = db_url
         self.engine = create_engine(self.connection_string)
         Session = sessionmaker(bind=self.engine)
         self.session = Session()

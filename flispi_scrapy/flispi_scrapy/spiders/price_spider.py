@@ -17,6 +17,11 @@ import re
 # Scrapy Spider
 class PriceSpider(scrapy.Spider):
     name = 'price_spider'
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'flispi_scrapy.pipelines.landbank_scraper_price_pipeline.LandbankPriceScraperPipeline': 300
+        }
+    }
 
     def start_requests(self):
         load_dotenv()

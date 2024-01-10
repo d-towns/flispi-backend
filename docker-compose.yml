@@ -9,11 +9,31 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - '5432:5432'
+  cache:
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 2s
+      retries: 10
+    volumes:
+      - ./cache:/data
+    restart: always
+    entrypoint: redis-server --appendonly yes
   api:
     build:
       context: .
       dockerfile: Dockerfile
       target: base
+    depends_on:
+      cache:
+        condition: service_healthy
     volumes:
       - ./src:/home/node/app/src
       - ./database:/home/node/app/database

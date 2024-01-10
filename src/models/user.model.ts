@@ -73,7 +73,8 @@ property_id: {
 }, { underscored: true, modelName: 'user_properties', timestamps: true, freezeTableName: true });
 _User.belongsToMany(_Property, { through: _UserProperties });
 _Property.belongsToMany(_User, { through: _UserProperties });
-
+_User.sync();
 _UserProperties.sync({alter : true});
+
 
 

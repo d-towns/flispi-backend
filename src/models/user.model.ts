@@ -33,35 +33,31 @@ export const getRedactedUser = (user:_User) : RedactedUser => {
  }
 }
 
-_User.init({
-    id: {
-        type: DataTypes.TEXT,
-        primaryKey: true
-      },
-    username: DataTypes.TEXT,
-    first_name: DataTypes.TEXT,
-    last_name: DataTypes.TEXT,
-    company: DataTypes.TEXT,
-    hashed_password: DataTypes.BLOB,
-    salt: DataTypes.TEXT,
-    email: DataTypes.TEXT,
-    phone: DataTypes.TEXT,
-    full_name: DataTypes.TEXT,
-}, { sequelize, underscored: true, modelName: 'users', timestamps: true, freezeTableName: true, getterMethods: {
-  redacted() {
-    return getRedactedUser(this);
-  }
-},
-})
+// _User.init({
+//     id: {
+//         type: DataTypes.TEXT,
+//         primaryKey: true
+//       },
+//     username: DataTypes.TEXT,
+//     first_name: DataTypes.TEXT,
+//     last_name: DataTypes.TEXT,
+//     company: DataTypes.TEXT,
+//     hashed_password: DataTypes.BLOB,
+//     salt: DataTypes.BLOB,
+//     email: DataTypes.TEXT,
+//     phone: DataTypes.TEXT,
+//     full_name: DataTypes.TEXT,
+// }, { sequelize, underscored: true, modelName: 'users', timestamps: true, freezeTableName: true, getterMethods: {
+//   redacted() {
+//     return getRedactedUser(this);
+//   }
+// },
+// })
 
 
 
-export const _UserProperties = sequelize.define('user_properties',  { user_id: {
+export const _Favorites = sequelize.define('favorites',  { user_id: {
   type: DataTypes.TEXT,
-  references: {
-    model: _User, 
-    key: 'id'
-  }
 },
 property_id: {
   type: DataTypes.TEXT,
@@ -70,11 +66,9 @@ property_id: {
     key: 'id'
   }
 }
-}, { underscored: true, modelName: 'user_properties', timestamps: true, freezeTableName: true });
-_User.belongsToMany(_Property, { through: _UserProperties });
-_Property.belongsToMany(_User, { through: _UserProperties });
-_User.sync();
-_UserProperties.sync({alter : true});
+}, { underscored: true, modelName: 'favorites', timestamps: true, freezeTableName: true });
+_Property.hasMany(_Favorites, {foreignKey: 'property_id'});
+_Favorites.sync();
 
 
 

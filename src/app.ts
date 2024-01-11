@@ -8,7 +8,7 @@ import * as dotenv from 'dotenv';
 import { _Blog } from './models/blog.model';
 import path from 'path'
 import {pbkdf2, randomBytes, timingSafeEqual } from 'node:crypto'
-import { _User, getRedactedUser, RedactedUser, _UserProperties} from './models/user.model';
+import { _User, getRedactedUser, RedactedUser, _Favorites} from './models/user.model';
 import passport  from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import session from 'express-session';
@@ -240,15 +240,13 @@ app.get('/properties/:id', async (req: any, res: any) => {
 
 app.post('/user/save-property', async (req: any, res: any) => {
   try {
-    const user = await _User.findByPk(req.body.userId || req.user['id']);
+    
     const property = await _Property.findByPk(req.body.propertyId);
-    if (user && property) {
-      console.log("ids", user.dataValues.id, property.dataValues.id);
-      
-      
-      const userprope = await _UserProperties.create({
-        userId: user.dataValues.id,
-        propertyId: property.dataValues.id
+    
+    if (property) {
+      const userprope = await _Favorites.create({
+        user_id: req.body.userId,
+        property_id: property.dataValues.id
       })
       res.json(userprope);
     } else {
@@ -261,12 +259,11 @@ app.post('/user/save-property', async (req: any, res: any) => {
 
 app.post('/user/remove-saved-property', async (req: any, res: any) => {
   try {
-    const user = await _User.findByPk(req.body.userId || req.user['id']);
     const property = await _Property.findByPk(req.body.propertyId);
-    if (user && property) {      
-      const userprop = await _UserProperties.destroy({
+    if (property) {      
+      const userprop = await _Favorites.destroy({
         where: {
-          userId: user.dataValues.id,
+          userId: req.body.userId,
           propertyId: property.dataValues.id
         }
       })
@@ -281,24 +278,25 @@ app.post('/user/remove-saved-property', async (req: any, res: any) => {
 
 app.get('/user/saved-properties', async (req: any, res: any) => {
   try {
-    const user = await _User.findByPk(req.query.userId || req.user['id']);
     
-    if (user) {
-      const propertyids = await _UserProperties.findAll({
-        attributes: ['propertyId'],
+    if (req.query.userId) {
+      const propertyids = await _Favorites.findAll({
+        attributes: ['property_id'],
         where: {
-          user_id: user.dataValues.id
+          user_id: req.query.userId
         }
       });
+      console.log("propertyids", propertyids);
+      
       const properties = await _Property.findAll({
         attributes: ['parcel_id', 'id', 'address', 'city', 'zip', 'property_class', 'price', 'square_feet', 'bedrooms', 'bathrooms', 'lot_size', 'featured', 'year_built', 'garage', 'stories', 'coords', 'images'],
         where: {
-          id: { [Op.in]: propertyids.map((property: any) => property.propertyId) }
+          id: { [Op.in]: propertyids.map((property: any) => property.property_id) }
         }
       });
       res.json(properties);
     } else {
-      res.status(404).send('User not found.');
+      res.status(200).send([]);
     }
   } catch (error) {
     console.log("error", error);

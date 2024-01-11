@@ -84,7 +84,6 @@ passport.serializeUser(function(user : any, done) {
 });
 
 passport.deserializeUser(function(user, done) {
-  console.log("Deserialized User:", user);
 
   _User.findOne({ where: { id: user } }).then(user => {
    return done(null, getRedactedUser(user)) 
@@ -94,9 +93,7 @@ passport.deserializeUser(function(user, done) {
 app.post ("/login", passport.authenticate('local', {
   failureRedirect: "/home",
 }), function(req, res) {
-  console.log("Session ID: ", req.session.id);
   if(req.user) {  
-    console.log("User: ", req.user);
     
     res.status(200).json(req.user);
   } else {
@@ -116,7 +113,6 @@ app.post('/logout', function(req, res){
 
 app.get('/user', function(req, res){
   if(req.user) {
-    console.log("user ID: ", req.user['id']);
     
     res.status(200).json(req.user);
   } else {
@@ -158,8 +154,6 @@ app.post('/register', function(req, res, next) {
 // CRUD routes for Property model
 app.get('/properties', async (req: any, res: any) => {
   try {
-    console.log("Session ID: ", req.session.id);
-    console.log("User: ", req.user);
     
     const seachTerm = req.query.searchTerm;
     const city: string[] =  req.query.city && String(req.query.city)?.toUpperCase().split(',');
@@ -286,7 +280,7 @@ app.get('/user/saved-properties', async (req: any, res: any) => {
           user_id: req.query.userId
         }
       });
-      console.log("propertyids", propertyids);
+
       
       const properties = await _Property.findAll({
         attributes: ['parcel_id', 'id', 'address', 'city', 'zip', 'property_class', 'price', 'square_feet', 'bedrooms', 'bathrooms', 'lot_size', 'featured', 'year_built', 'garage', 'stories', 'coords', 'images'],

@@ -1,21 +1,10 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { Sequelize, Model, DataTypes, where, Op } from 'sequelize';
-import { FLOAT, INTEGER } from 'sequelize';
+import { Sequelize, Op } from 'sequelize';
 import { _Property } from './models/property.model';
-import cors from 'cors';
 import * as dotenv from 'dotenv';
 import { _Blog } from './models/blog.model';
-import path from 'path'
-import {pbkdf2, randomBytes, timingSafeEqual } from 'node:crypto'
-import { _User, getRedactedUser, RedactedUser, _Favorites} from './models/user.model';
-import passport  from 'passport';
-import { Strategy as LocalStrategy } from 'passport-local';
-import session from 'express-session';
-import {createClient} from 'redis';
-import RedisStore from 'connect-redis';
-import {v4 as uuidv4} from 'uuid';
-
+import { _Favorites } from './models/favorites.model';
 dotenv.config();
 // Rest of your imports and application code
 
@@ -27,16 +16,6 @@ declare module 'express-session' {
 
 const app = express();
 const port = process.env.PORT;
-
-const redisClient = createClient({
-  url: 'redis://cache:6379'
-});
-
-redisClient.connect().then(() => {
-  console.log('Redis connected');
-}).catch((err) => {
-  console.log('Redis connection error', err);
-});
 
 const sequelize = new Sequelize(process.env.NODE_ENV === 'production' ? process.env.PROD_POSTGRESS_URL : process.env.POSTGRESS_URL, {
   dialect: 'postgres'
@@ -55,101 +34,7 @@ app.use((req, res, next) => {
 // Middleware for parsing request body
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(session({
-  store: new RedisStore({ client: redisClient }),
-  secret: 'your_secret',
-  resave: false,
-  rolling: true,
-  saveUninitialized: false,
-  cookie: { secure: 'auto', maxAge: 1000 * 60 * 10, httpOnly: false}
-}));
-app.use(passport.initialize());
-app.use(passport.session());
 
-passport.use(new LocalStrategy(function verify(username, password, done) {
-  _User.findOne({ where: { username: username } }).then(user => {
-    if (!user) { return done(null, false); }
-    pbkdf2(password,  user.get('salt') as Buffer, 310000, 32, 'sha256', function(err, hashedPassword) {
-      if (err) { return done(err); }
-      if (!timingSafeEqual(user.get('hashed_password') as Buffer, hashedPassword)) {
-        return done(null, false, { message: 'Incorrect username or password.' });
-      }
-      return done(null, user.get('redacted'));
-    });
-  });
-}));
-
-passport.serializeUser(function(user : any, done) {
-    return done(null,user.id);
-});
-
-passport.deserializeUser(function(user, done) {
-
-  _User.findOne({ where: { id: user } }).then(user => {
-   return done(null, getRedactedUser(user)) 
-  });
-});
-
-app.post ("/login", passport.authenticate('local', {
-  failureRedirect: "/home",
-}), function(req, res) {
-  if(req.user) {  
-    
-    res.status(200).json(req.user);
-  } else {
-    res.status(401).send('Unauthorized');
-  }
-});
-
-app.post('/logout', function(req, res){
-  req.logout((err) => {
-    if(err) {
-      console.log("Error logging out", err);
-      return res.status(500).json({message: 'Error logging out'});
-    }
-    res.status(200).json({message: 'success'});
-  });
-});
-
-app.get('/user', function(req, res){
-  if(req.user) {
-    
-    res.status(200).json(req.user);
-  } else {
-    res.status(401).send('Unauthorized');
-  }
-});
-
-app.post('/register', function(req, res, next) {
-  // if a user with the same username already exists, return an error
-  _User.findOne({ where: { username: req.body.username } }).then(existingUser => {
-    if(existingUser) {
-        res.status(400).send('User already exists');
-    } else {
-    // otherwise, create a new user with the provided username and password
-      var salt = randomBytes(16);
-      pbkdf2(req.body.password, salt, 310000, 32, 'sha256', function(err, hashedPassword) {
-        if (err) { return next(err); }
-        _User.create({
-          id: uuidv4(),
-          email: req.body.email,
-          phone: req.body.phone,
-          username: req.body.username,
-          hashed_password: hashedPassword,
-          first_name: req.body.firstName,
-          last_name: req.body.lastName,
-          company: req.body.company,
-          salt: salt
-        }).then(user => {
-          req.login(user, function(err) {
-            if (err) { return next(err); }
-            res.status(200).json(getRedactedUser(user));
-          });
-        });
-      });
-    }
-  });
-});
 
 // CRUD routes for Property model
 app.get('/properties', async (req: any, res: any) => {
@@ -257,8 +142,8 @@ app.post('/user/remove-saved-property', async (req: any, res: any) => {
     if (property) {      
       const userprop = await _Favorites.destroy({
         where: {
-          userId: req.body.userId,
-          propertyId: property.dataValues.id
+          user_id: req.body.userId,
+          property_id: property.dataValues.id
         }
       })
       res.json(userprop);

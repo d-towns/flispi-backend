@@ -2,9 +2,9 @@ import { Sequelize, Model, DataTypes, where, Op } from 'sequelize';
 import { FLOAT, INTEGER } from 'sequelize';
 
 import {sequelize} from '../db';
+import { _Favorites } from './favorites.model';
 
-export class _Property extends Model { }
-_Property.init({
+export const _Property = sequelize.define( 'properties', {
   id: {
     type: DataTypes.TEXT,
     primaryKey: true
@@ -28,4 +28,6 @@ _Property.init({
   exterior_repairs: DataTypes.JSON,
   interior_repairs: DataTypes.JSON,
   next_showtime: DataTypes.TIME,
-}, { sequelize, modelName: 'properties', timestamps: false, freezeTableName: true});
+}, { modelName: 'properties', timestamps: false, freezeTableName: true});
+
+_Property.sync();

@@ -10,19 +10,19 @@ import express from 'express';
 
 export class PropertiesRoutes extends CommonRoutesConfig {
     constructor(app: express.Application) {
-        super(app, 'ProductsRoutes');
+        super(app, 'PropertiesRoutes');
         
     }
 
     configureRoutes(): express.Application {
         this.app.route(`/properties`)
         .get( async (req: express.Request, res: express.Response) => {
-            await propertiesController.listProducts(req, res)
+            await propertiesController.listProperties(req, res)
         })
 
     this.app.route(`/property/:propertyId`)
         .get( async (req: express.Request, res: express.Response) => {
-            await propertiesController.getproductById(req, res)
+            await propertiesController.getPropertyById(req, res)
         })
     
     this.app.route(`/properties/save-property`)

@@ -12,7 +12,7 @@ const log: debug.IDebugger = debug('app:products-controller');
  */
 
 class PropertiesController {
-    async listProducts(req: express.Request, res: express.Response) {
+    async listProperties(req: express.Request, res: express.Response) {
         const seachTerm = req.query.searchTerm;
         const city: string[] =  req.query.city && String(req.query.city)?.toUpperCase().split(',');
         const zip: string[] = req.query.zip && String(req.query.zip)?.split(',');
@@ -70,7 +70,7 @@ class PropertiesController {
         res.status(200).send(properties);
     }
 
-    async getproductById(req: express.Request, res: express.Response) {
+    async getPropertyById(req: express.Request, res: express.Response) {
         console.log(req.params);
         if(!req.params.propertyId) {
             res.status(400).send(new Error(`Inavlid ID supplied`));

@@ -14,7 +14,7 @@ export class BlogRoutes extends CommonRoutesConfig {
         });
 
         this.app.get('/blog/:id', async (req: any, res: any) => {
-               await BlogController.getBlog(req, res)
+            await BlogController.getBlog(req, res)
         });
 
         return this.app;

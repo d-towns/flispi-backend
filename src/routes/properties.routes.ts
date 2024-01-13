@@ -37,8 +37,6 @@ export class PropertiesRoutes extends CommonRoutesConfig {
     
     this.app.route(`/properties/saved-properties`)
         .get( async (req: express.Request, res: express.Response) => {
-            console.log("req.query.userId", req.query);
-            
             await propertiesController.getFavorites(req, res)
         })
 

@@ -3,7 +3,7 @@ import express from 'express';
 import { _Property } from '../models/property.model';
 import { _Favorites } from '../models/favorites.model';
 import { Op } from 'sequelize';
-const log: debug.IDebugger = debug('app:products-controller');
+const log: debug.IDebugger = debug('app:properties-controller');
 
 /**
  * Takes in request from the express server and calls the appropriate services to perform the CRUD

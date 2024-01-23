@@ -19,9 +19,12 @@ class BlogController {
     }
 
     async getBlog(req: express.Request, res: express.Response) {
-        const blog = await _Blog.findByPk(req.params.id)
+        console.log(req.params)
+        const blog = await _Blog.findOne({where: {slug: req.params.id}})
         res.json(blog);
     }
+
+
 }
 
 export default new BlogController();

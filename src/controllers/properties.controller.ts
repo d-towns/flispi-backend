@@ -22,12 +22,14 @@ class PropertiesController {
     
         const sqftMax = req.query.sqft
         const lot_sizeMax = req.query.lotSize;
+
         const isFeatured = req.query.featured;
         
         const limit :any = req.query.limit;
         const offset : any = req.query.offset;
 
-        const properties = await _Property.findAll({
+
+        const {count, rows} = await _Property.findAndCountAll({
             attributes: ['parcel_id', 'id', 'address', 'city', 'zip', 'property_class', 'price', 'square_feet', 'bedrooms', 'bathrooms', 'lot_size', 'featured', 'year_built', 'garage', 'stories', 'coords', 'next_showtime', 'images'],
             where: {
               address: { [Op.ne]: null },
@@ -66,8 +68,16 @@ class PropertiesController {
             limit: limit,
             offset: offset
           });
-          
-        res.status(200).send(properties);
+        res.status(200).json(
+            {
+                properties: rows,
+                metadata: {
+                    total: count,
+                    limit: limit,
+                    offset: offset
+                }
+            }
+        );
     }
 
     async getPropertyById(req: express.Request, res: express.Response) {

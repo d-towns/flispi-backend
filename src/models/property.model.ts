@@ -1,6 +1,4 @@
-import { Sequelize, Model, DataTypes, where, Op } from 'sequelize';
-import { FLOAT, INTEGER } from 'sequelize';
-
+import { DataTypes } from 'sequelize';
 import {sequelize} from '../db';
 import { _Favorites } from './favorites.model';
 

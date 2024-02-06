@@ -39,6 +39,11 @@ export class PropertiesRoutes extends CommonRoutesConfig {
         .get( async (req: express.Request, res: express.Response) => {
             await propertiesController.getFavorites(req, res)
         })
+    
+    this.app.route(`/properties/saved-property`)
+        .get( async (req: express.Request, res: express.Response) => {
+            await propertiesController.getSavedProperty(req, res)
+        })
 
     this.app.route(`/properties/zipcodes`)
         .get( async (req: express.Request, res: express.Response) => {

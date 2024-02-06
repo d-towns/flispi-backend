@@ -13,7 +13,7 @@ const log: debug.IDebugger = debug('app:properties-controller');
 
 class PropertiesController {
     async listProperties(req: express.Request, res: express.Response) {
-        const seachTerm = req.query.searchTerm;
+        const seachTerm = req.query.searchTerm && String(req.query.searchTerm).toUpperCase()
         const city: string[] =  req.query.city && String(req.query.city)?.toUpperCase().split(',');
         const zip: string[] = req.query.zip && String(req.query.zip)?.split(',');
         const propertyClasses = req.query.propertyClass && String(req.query.propertyClass)?.split(',');
@@ -115,7 +115,12 @@ class PropertiesController {
                   id: { [Op.in]: propertyids.map((property: any) => property.property_id) }
                 }
               });
-              res.json(properties);
+              res.json({
+                properties: properties,
+                metadata: {
+                  total: properties.length
+                }
+              });
             } else {
               res.status(200).send([]);
             }
@@ -126,17 +131,41 @@ class PropertiesController {
           }
     }
 
+    async getSavedProperty(req: express.Request, res: express.Response) {
+        try {
+            if(!req.query.propertyId || !req.query.userId) {
+                res.status(400).send(new Error(`Inavlid ID supplied`));
+                return;
+            }
+            console.log(req.query);
+            const property = await _Favorites.findOne({
+              where: {
+                  user_id: req.query.userId,
+                  property_id: req.query.propertyId
+              }
+            })
+            if (!property) {
+                res.send({success: false});
+                return;
+            } else {
+                res.json({success: true});
+            }
+          } catch (error) {
+            res.status(500).send('Error retrieving saved property.');
+          }
+    }
+
     async saveProperty(req: express.Request, res: express.Response) {
         try {
             if(!req.body.propertyId || !req.body.userId) {
                 res.status(400).send(new Error(`Inavlid ID supplied`));
                 return;
             }
-            const favorties = await _Favorites.create({
-            user_id: req.body.userId,
-            property_id: req.body.propertyId
-            })
-            res.json(favorties);
+            await _Favorites.create({
+              user_id: req.body.userId,
+              property_id: req.body.propertyId
+              })
+            res.json({success: true });
           } catch (error) {
             res.status(500).send('Error saving the property.');
           }
@@ -148,13 +177,13 @@ class PropertiesController {
                 res.status(400).send(new Error(`Inavlid ID supplied`));
                 return;
             }
-            const userprop = await _Favorites.destroy({
-            where: {
-                user_id: req.body.userId,
-                property_id: req.body.propertyId
-            }
+            await _Favorites.destroy({
+              where: {
+                  user_id: req.body.userId,
+                  property_id: req.body.propertyId
+              }
             })
-            res.json(userprop);
+            res.json({success: true });
           } catch (error) {
             res.status(500).send('Error saving the property.');
           }
@@ -169,7 +198,6 @@ class PropertiesController {
             zip: { [Op.ne]: null }
             }
         });
-        // turn the result into an array of strings
         const zipCodes = properties.map((property: any) => property.zip);
         res.json(zipCodes);
         } catch (error) {

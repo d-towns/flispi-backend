@@ -19,6 +19,8 @@ class PropertiesController {
         const propertyClasses = req.query.propertyClass && String(req.query.propertyClass)?.split(',');
         const priceMax = req.query.price;
         const sort = req.query.sort && String(req.query.sort)?.split(',');
+        const bedrooms = req.query.bedrooms;
+        const bathrooms = req.query.bathrooms;
     
         const sqftMax = req.query.sqft
         const lot_sizeMax = req.query.lotSize;
@@ -60,6 +62,12 @@ class PropertiesController {
               }),
               ...(isFeatured && {
                 featured: { [Op.eq]: isFeatured },
+              }),
+              ...(bedrooms && {
+                bedrooms: { [Op.gte]: bedrooms },
+              }),
+              ...(bathrooms && {
+                bathrooms: { [Op.gte]: bathrooms },
               }),
             },
             order: sort && [

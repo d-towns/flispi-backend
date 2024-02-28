@@ -1,5 +1,5 @@
 import {CommonRoutesConfig} from '../common/common.routes';
-import propertiesController from '../controllers/properties.controller';
+import PropertiesController from '../controllers/properties.controller';
 import express from 'express';
 
 /**
@@ -15,39 +15,42 @@ export class PropertiesRoutes extends CommonRoutesConfig {
     }
 
     configureRoutes(): express.Application {
-        this.app.route(`/properties`)
-        .get( async (req: express.Request, res: express.Response) => {
-            await propertiesController.listProperties(req, res)
-        })
+        this.app.route('/properties')
+        .get(
+          PropertiesController.listPropertiesValidations(),
+          async (req, res) => {
+            await PropertiesController.listProperties(req, res);
+          }
+        );
 
     this.app.route(`/property/:propertyId`)
         .get( async (req: express.Request, res: express.Response) => {
-            await propertiesController.getPropertyById(req, res)
+            await PropertiesController.getPropertyById(req, res)
         })
     
     this.app.route(`/properties/save-property`)
         .post( async (req: express.Request, res: express.Response) => {
-            await propertiesController.saveProperty(req, res)
+            await PropertiesController.saveProperty(req, res)
         })
 
     this.app.route(`/properties/remove-saved-property`)
         .post( async (req: express.Request, res: express.Response) => {
-            await propertiesController.removeSavedProperty(req, res)
+            await PropertiesController.removeSavedProperty(req, res)
         })
     
     this.app.route(`/properties/saved-properties`)
         .get( async (req: express.Request, res: express.Response) => {
-            await propertiesController.getFavorites(req, res)
+            await PropertiesController.getFavorites(req, res)
         })
     
     this.app.route(`/properties/saved-property`)
         .get( async (req: express.Request, res: express.Response) => {
-            await propertiesController.getSavedProperty(req, res)
+            await PropertiesController.getSavedProperty(req, res)
         })
 
     this.app.route(`/properties/zipcodes`)
         .get( async (req: express.Request, res: express.Response) => {
-            await propertiesController.getZipCodes(req, res)
+            await PropertiesController.getZipCodes(req, res)
         })
 
 

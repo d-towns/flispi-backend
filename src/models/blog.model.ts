@@ -18,4 +18,4 @@ _Blog.init({
   tag: DataTypes.TEXT
 }, { sequelize, modelName: 'blog', timestamps: false, freezeTableName: true});
 
-_Blog.sync({alter: true});
+_Blog.sync();

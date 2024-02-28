@@ -1,6 +1,5 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { Sequelize, Op } from 'sequelize';
 import { _Property } from './models/property.model';
 import * as dotenv from 'dotenv';
 import cors from 'cors';
@@ -26,7 +25,6 @@ const routes: Array<CommonRoutesConfig> = [];
 
 // Sync models with database
 sequelize.authenticate()
-sequelize.sync();
 
 app.use(cors(
   {
@@ -38,6 +36,8 @@ app.use(cors(
 // Middleware for parsing request body
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// Routes
 routes.push(new PropertiesRoutes(app));
 routes.push(new BlogRoutes(app));
 

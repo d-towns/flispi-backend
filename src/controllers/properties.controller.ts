@@ -8,7 +8,7 @@ const log: debug.IDebugger = debug('app:properties-controller');
 
 /**
  * Takes in request from the express server and calls the appropriate services to perform the CRUD
- * actiosn associated with the request (GET, POST, PATCH, etc.). It then responds with the data
+ * actions associated with the request (GET, POST, PATCH, etc.). It then responds with the data
  *  requested or success/error messaging
  */
 
@@ -35,8 +35,7 @@ class PropertiesController {
           }
         }
         return true;
-      }
-      ),
+      }),
       query('sort').optional().isString().withMessage('Sort must be a string'),
       query('bedrooms').optional().isNumeric().withMessage('Bedrooms must be numeric'),
     ];
@@ -51,7 +50,6 @@ class PropertiesController {
     const { city, zip, price, sqft, featured,
       searchTerm, bedrooms, bathrooms, lotSize } = req.query;
 
-    // split propertyClass into an array
     const propertyClass = req.query.propertyClass ? (req.query.propertyClass as string).split(',') : undefined;
     const sort = req.query.sort && String(req.query.sort)?.split(',');
 
@@ -82,7 +80,6 @@ class PropertiesController {
       };
 
       const { count, rows } = await _Property.findAndCountAll({
-        attributes: ['parcel_id', 'id', 'address', 'city', 'zip', 'property_class', 'price', 'square_feet', 'bedrooms', 'bathrooms', 'lot_size', 'featured', 'year_built', 'garage', 'stories', 'coords', 'next_showtime', 'images'],
         where: queryConditions,
         order: sort ? [[sort[0], sort[1]]] : undefined,
         limit: limit,
@@ -104,9 +101,7 @@ class PropertiesController {
       res.status(400).send(new Error(`Inavlid ID supplied`));
       return;
     }
-    const property = await _Property.findByPk(req.params.propertyId, {
-      attributes: ['parcel_id', 'id', 'address', 'city', 'zip', 'property_class', 'price', 'price', 'square_feet', 'bedrooms', 'bathrooms', 'lot_size', 'featured', 'year_built', 'garage', 'stories', 'coords', 'images', 'next_showtime', 'interior_repairs', 'exterior_repairs'],
-    });
+    const property = await _Property.findByPk(req.params.propertyId);
 
     if (property) {
       res.json(property);
@@ -128,7 +123,6 @@ class PropertiesController {
 
 
         const properties = await _Property.findAll({
-          attributes: ['parcel_id', 'id', 'address', 'city', 'zip', 'property_class', 'price', 'square_feet', 'bedrooms', 'bathrooms', 'lot_size', 'featured', 'year_built', 'garage', 'stories', 'coords', 'images'],
           where: {
             id: { [Op.in]: propertyids.map((property: any) => property.property_id) }
           }

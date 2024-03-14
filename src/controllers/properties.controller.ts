@@ -4,6 +4,7 @@ import { _Property } from '../models/property.model';
 import { _Favorites } from '../models/favorites.model';
 import { Op } from 'sequelize';
 import { query, validationResult } from 'express-validator';
+import { _ServiceItem } from '../models/service_item.model';
 const log: debug.IDebugger = debug('app:properties-controller');
 
 /**
@@ -101,7 +102,16 @@ class PropertiesController {
       res.status(400).send(new Error(`Inavlid ID supplied`));
       return;
     }
-    const property = await _Property.findByPk(req.params.propertyId);
+    const property = await _Property.findByPk(req.params.propertyId, {
+      include: [
+        {
+          model: _ServiceItem,
+          attributes: {
+            exclude: ['property_service_item']
+          },
+        }
+      ],
+    });
 
     if (property) {
       res.json(property);
@@ -120,7 +130,6 @@ class PropertiesController {
             user_id: req.query.userId
           }
         });
-
 
         const properties = await _Property.findAll({
           where: {

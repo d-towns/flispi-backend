@@ -9,6 +9,8 @@ import { sequelize } from './db';
 import { CommonRoutesConfig } from './common/common.routes';
 import { PropertiesRoutes } from './routes/properties.routes';
 import { BlogRoutes } from './routes/blog.routes';
+import { _ServiceItem } from './models/service_item.model';
+import { _PropertyServiceItem } from './models/property_service_item';
 dotenv.config();
 
 declare module 'express-session' {
@@ -25,6 +27,8 @@ const routes: Array<CommonRoutesConfig> = [];
 
 // Sync models with database
 sequelize.authenticate()
+_ServiceItem.sync();
+_PropertyServiceItem.sync();
 
 app.use(cors(
   {

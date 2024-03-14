@@ -14,7 +14,7 @@ property_id: {
     key: 'id'
   }
 }
-}, { underscored: true, modelName: 'favorites', timestamps: true, freezeTableName: true });
+}, { underscored: true, modelName: 'favorites', timestamps: false, freezeTableName: true });
 _Favorites.belongsTo(_Property, {foreignKey: 'property_id'});
 _Property.hasMany(_Favorites, {foreignKey: 'property_id'});
 _Favorites.sync();

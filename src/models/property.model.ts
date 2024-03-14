@@ -31,4 +31,4 @@ export const _Property = sequelize.define( 'properties', {
   repair_cost_max: DataTypes.FLOAT,
 
 }, { modelName: 'properties', timestamps: false, freezeTableName: true});
-_Property.sync();
+_Property.sync({alter: true});

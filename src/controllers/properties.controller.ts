@@ -49,11 +49,12 @@ class PropertiesController {
     }
 
     const { city, zip, price, sqft, featured,
-      searchTerm, bedrooms, bathrooms, lotSize } = req.query;
+       bedrooms, bathrooms, lotSize } = req.query;
+
+    const searchTerm = req.query.searchTerm ? String(req.query.searchTerm).toUpperCase() : undefined
 
     const propertyClass = req.query.propertyClass ? (req.query.propertyClass as string).split(',') : undefined;
     const sort = req.query.sort && String(req.query.sort)?.split(',');
-
 
     const limit = Number(req.query.limit) || 30;
     const offset = Number(req.query.offset) || 0;

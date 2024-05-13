@@ -22,5 +22,5 @@ export const _PropertyServiceItem = sequelize.define('property_service_item', {
     freezeTableName: true
     });
 
-  _PropertyServiceItem.belongsTo(_Property, {foreignKey: 'property_id'});
-  _PropertyServiceItem.belongsTo(_ServiceItem, {foreignKey: 'service_item_id'});
+  _PropertyServiceItem.belongsTo(_Property, {foreignKey: 'property_id', onDelete: 'CASCADE'});
+  _PropertyServiceItem.belongsTo(_ServiceItem, {foreignKey: 'service_item_id', onDelete: 'CASCADE'});

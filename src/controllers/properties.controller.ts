@@ -19,7 +19,6 @@ class PropertiesController {
 
   static listPropertiesValidations() {
     return [
-      // Define validation rules
       query('price').optional().isNumeric().withMessage('Price must be numeric'),
       query('sqft').optional().isNumeric().withMessage('Square feet must be numeric'),
       query('featured').optional().isIn(['true', 'false']).withMessage('Featured must be true or false'),
